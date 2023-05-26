@@ -1,0 +1,69 @@
+CREATE TABLE IF NOT EXISTS scenario (
+  `idscenario` INT NOT NULL AUTO_INCREMENT,
+  `nom` VARCHAR(11) NOT NULL,
+  `intervalle` INT NOT NULL,
+  PRIMARY KEY (idscenario)
+);
+
+CREATE TABLE IF NOT EXISTS port (
+  `idport` INT NOT NULL AUTO_INCREMENT,
+  `nom` VARCHAR(11) NOT NULL,
+  PRIMARY KEY (idport)
+);
+
+CREATE TABLE IF NOT EXISTS port_scenario (
+  `idport_scenario`INT NOT NULL AUTO_INCREMENT,
+  `port` INT REFERENCES port(idport),
+  `scenario` INT REFERENCES scenario(idscenario),
+  `numport` SMALLINT NOT NULL,
+  PRIMARY KEY (idport_scenario)
+);
+
+
+CREATE TABLE IF NOT EXISTS type_flux (
+  `code` VARCHAR(1) NOT NULL,
+  `lib` VARCHAR(11) NOT NULL,
+  PRIMARY KEY (code)
+);
+
+
+CREATE TABLE IF NOT EXISTS test (
+  `idtest` INT NOT NULL AUTO_INCREMENT,
+  `scenario` INT NOT NULL REFERENCES scenario(idscenario),
+  `nom` VARCHAR(11) NOT NULL,
+  `ts_debut` DATETIME NOT NULL,
+  PRIMARY KEY (idtest)
+);
+
+CREATE TABLE IF NOT EXISTS logs (
+  `idlogs` BIGINT NOT NULL AUTO_INCREMENT,
+  `test` INT NOT NULL REFERENCES test(idtest),
+  `tiknum` INT NOT NULL,
+  PRIMARY KEY (idlogs)
+);
+
+CREATE TABLE IF NOT EXISTS detail_log (
+  `iddetail_logs` INT NOT NULL AUTO_INCREMENT,
+  `logs` BIGINT NOT NULL REFERENCES logs(idlogs),
+  `port` INT NOT NULL REFERENCES port(idport),
+  `up` INT NOT NULL,
+  `down` INT NOT NULL,
+  `ping` INT NOT NULL,
+  PRIMARY KEY (iddetail_logs)
+);
+
+
+CREATE TABLE IF NOT EXISTS params (
+  `idparams` INT NOT NULL AUTO_INCREMENT,
+  `scenario` INT REFERENCES scenario(idscenario),
+  `port` INT REFERENCES port(idport),
+  `type_flux` INT REFERENCES type_flux(code),
+  `debut` INT NOT NULL,
+  `fin` TEXT NOT NULL,
+  PRIMARY KEY (idparams)
+);
+
+
+INSERT INTO port(nom) VALUES('p1');
+INSERT INTO port(nom) VALUES('p2');
+INSERT INTO port(nom) VALUES('p3');

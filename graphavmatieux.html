@@ -1,0 +1,114 @@
+<div>
+    <!-- Création de trois canvas pour les trois graphiques -->
+    <canvas id="myChart"></canvas>
+    <canvas id="myChart2"></canvas>
+    <canvas id="myChart3"></canvas>
+  </div>
+  
+  <!-- Import de la librairie Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <script>
+    // Récupération du paramètre idtest dans l'URL
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const idtest = urlParams.get('idtest');
+    
+    // Récupération de l'origine de l'URL
+    const { origin } = window.location;
+  
+    // Envoi d'une requête AJAX pour récupérer les données à afficher
+    const requete = fetch(`${origin}/edsa-projet/api.php?idtest=${idtest}`).then(function(reponse){
+      return reponse.json();
+    }).then(data => console.log(data))
+  
+    // Fonction pour créer les graphiques à partir des données récupérées
+    function createGraph(data){
+  
+      // Initialisation des tableaux pour les données des ports 1, 2 et 3
+      const port1 = {
+        up: [], 
+        down:[],
+        ping: []
+      }
+  
+      const port2 = {
+        up: [], 
+        down:[],
+        ping: []
+      }
+  
+      const port3 = {
+        up: [], 
+        down:[],
+        ping: []
+      }
+  
+      // Tableau pour les numéros de ports utilisés
+      const usedPorts = [];
+  
+      // Boucle pour parcourir les données récupérées
+      data.forEach(element => {
+        // Ajout du numéro de port dans le tableau des ports utilisés si celui-ci n'y est pas déjà présent
+        if (!usedPorts.includes(element.port)) {
+          usedPorts.push(element.port);
+        }
+  
+        // Ajout des données du port dans le tableau correspondant
+        switch (element.port) {
+          case '1':
+            port1.up.push(element.up);
+            port1.down.push(element.down);
+            port1.ping.push(element.ping);
+            break;
+          case '2':
+            port2.up.push(element.up);
+            port2.down.push(element.down);
+            port2.ping.push(element.ping);
+            break;
+          case '3':
+            port3.up.push(element.up);
+            port3.down.push(element.down);
+            port3.ping.push(element.ping);
+            break;
+          default:
+            break;
+        }
+      });
+  
+      // Tableau des labels pour les graphiques
+      const labels = [
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+      ];
+  
+      // Création des données et de la configuration pour le graphique du port 1
+      const dataPort1 = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'upload',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(0, 0, 0)',
+            cubicInterpolationMode: 'monotone',
+            data: port1.ping,
+          },
+        ]
+      };
+      const configPort1 = {
+        type: 'line',
+        data: dataPort1,
+        options: {}
+      };
+      // Création du graphique pour le port 1
+      const myChartP1 = new Chart(
+          document.getElementById('myChart'),
+          configPort1
+      );
+    }
+  </script>
+  

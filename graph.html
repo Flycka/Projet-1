@@ -1,0 +1,136 @@
+<div class="taille">
+  <canvas id="myChart1"></canvas>
+</div>
+<div class="taille">
+  <canvas id="myChart2"></canvas>
+</div>
+<div class="taille">
+  <canvas id="myChart3"></canvas>
+</div>
+
+<style>
+  .taille{
+    width: 50%;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+const queryString = window.location.search;
+
+const urlParams = new URLSearchParams(queryString);
+
+const idtest = urlParams.get('idtest');
+console.log(idtest);
+
+const { origin } = window.location;
+console.log(origin);
+
+const requete = fetch(`${origin}/edsa-projet/api.php?idtest=${idtest}`)
+  .then(function(reponse){
+    return reponse.json();
+  })
+  .then(function(data) {
+    const dataPort1 = data.filter(d => d.port === "1");
+    const dataPort2 = data.filter(d => d.port === "2");
+    const dataPort3 = data.filter(d => d.port === "3");
+    
+    createGraph(dataPort1, "Port 1", "myChart1");
+    createGraph(dataPort2, "Port 2", "myChart2");
+    createGraph(dataPort3, "Port 3", "myChart3");
+  });
+
+function createGraph(data, portLabel, chartId) {
+  const labels = data.map((d) => d.tiknum);
+  
+  const dataChart = {
+    labels: labels,
+    datasets: [
+      {
+        label: 'Upload',
+        data: data.map((d) => d.up),
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgba(54, 162, 235, 1)',
+        borderWidth: 1,
+        fill: true,
+      },
+      {
+        label: 'Download',
+        data: data.map((d) => d.down),
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        fill: true,
+      },
+      
+    ]
+  };
+
+  const configChart = {
+    type: 'line',
+    data: dataChart,
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: `Performance du port ${portLabel}`
+        },
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Temps (seconde)'
+          }
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: 'Ping'
+          },
+          suggestedMin: 0,
+          suggestedMax: 1,
+        }
+      }
+    }
+  };
+
+  const myChart = new Chart(
+    document.getElementById(chartId),
+    configChart
+  );
+}
+</script>
+<a href="/edsa-projet/chxscenario.php" class="leBouton leBouton2">Retour</a>
+<style>
+
+  body{
+     height: 25%;
+     text-align: center;
+     margin-top: 20%;
+     
+  }
+  a.leBouton {
+  text-decoration: none;
+  padding: 10px 30px;
+  background-color: #181b3c; 
+  color: white;
+  border: 1px solid gray;
+  border-style:inset;
+  }
+  a.leBouton2
+  {
+  border-radius: 12px;
+  border: 2px solid #46a28d;
+  }
+  a.leBouton:hover {
+  background-color: #17a589;
+  color:white;
+  }
+  .emplacement{
+      margin-top: 3em;
+  }
+</style>
